@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 3. Load the Dataset
+
+data = pd.read_csv('users_data.csv')
+
+# 4. Data Exploration
+
+print(data.head())
+
+
+print(data.info())
+
+
+print(data.isnull().sum())
+
+# 5. Data Cleaning
+
+data.dropna(inplace=True)
+
+
+data = data[(data['age'] >= 18) & (data['age'] <= 100)]
+
+# 6. Basic Statistics
+
+print(data.describe())
+
+
+gender_counts = data['gender'].value_counts()
+print(gender_counts)
+
+# 7. Visualization
+
+plt.figure(figsize=(10, 6))
+sns.histplot(data['age'], bins=20, kde=True)
+plt.title('Age Distribution')
+plt.xlabel('Age')
+plt.ylabel('Number of Users')
+plt.show()
+
+plt.figure(figsize=(8, 5))
+sns.countplot(x='gender', data=data)
+plt.title('Gender Distribution')
+plt.xlabel('Gender')
+plt.ylabel('Number of Users')
+plt.show()
+
+# 8. User Segmentation
+
+data['balance_category'] = pd.cut(data['balance'], bins=[0, 1000, 5000, 10000, np.inf], labels=['Low', 'Medium', 'High', 'Very High'])
+
+print(data['balance_category'].value_counts())
+
+# 9. Results and Recommendations
+
+results = data.groupby('balance_category').agg({'user_id': 'count', 'age': 'mean'})
+results.to_csv('user_segments_analysis.csv')
+
+print(results)
